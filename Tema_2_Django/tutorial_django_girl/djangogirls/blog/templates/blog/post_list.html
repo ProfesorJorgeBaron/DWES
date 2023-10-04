@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+    <h1>Django girls</h1>
+
+    {% for post in posts_mostrar %}
+        <article>
+            <time> published {{ post.published.date }}  </time>
+            <h2>{{ post.title }}</h2>
+            <p>{{ post.text }}</p>
+        </article>
+    {% endfor %}
+
+    </body>
+</html>
