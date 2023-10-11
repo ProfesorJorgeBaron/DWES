@@ -20,7 +20,7 @@ class Libro(models.Model):
     ]
 
     nombre = models.CharField(max_length=200)
-    tipo = models.CharField(
+    idioma = models.CharField(
         max_length=2,
         choices=IDIOMAS,
         default="ES",
@@ -28,6 +28,8 @@ class Libro(models.Model):
     
     descripcion = models.TextField()
     fecha_publicacion = models.DateField()
+    biblioteca = models.ForeignKey(Biblioteca,on_delete=models.CASCADE)
+    autores = models.ManyToManyField(Autor)
 
     
 class Cliente(models.Model):
@@ -39,3 +41,4 @@ class DatosCliente(models.Model):
      direccion = models.TextField()
      gustos = models.TextField()
      telefono = models.IntegerField()
+     cliente = models.OneToOneField(Cliente,on_delete=models.CASCADE)
