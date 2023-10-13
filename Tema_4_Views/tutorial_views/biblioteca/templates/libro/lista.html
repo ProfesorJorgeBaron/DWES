@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+    <h1>Django girls</h1>
+
+    {% for libro in libros_mostrar %}
+        <div>
+            <h2>Nombre: {{ libro.nombre }} </h2>  
+            <h3>Idioma: {{ libro.get_idioma_display }}</h2>
+            <p>Descripcion{{ libro.descripcion }}</p>
+        </div>
+    {% endfor %}
+
+    </body>
+</html>
