@@ -7,6 +7,13 @@
     {% for libro in libros_mostrar %}
         <div>
             <h2>Nombre: {{ libro.nombre }} </h2>
+            <h2>Biblioteca {{ libro.biblioteca.nombre }}</h2>
+            <h2>Autores</h2>
+            <ul>
+                {% for autor in libro.autores.all %}
+                    <li>{{ autor.nombre }}</li>
+                {% endfor%}
+            </ul>
             <p>Fecha Publicacion {{ libro.fecha_publicacion }}.
                 <a href="{% url 'dame_libros_fecha' libro.fecha_publicacion.year libro.fecha_publicacion.month %}">
                     Pulsa para ver libros del mismo año y mes
