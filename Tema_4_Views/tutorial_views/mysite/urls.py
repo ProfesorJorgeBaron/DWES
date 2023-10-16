@@ -20,3 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include("biblioteca.urls"))
 ]
+
+from django.conf.urls import handler404
+handler404 = "biblioteca.views.mi_error_404"
