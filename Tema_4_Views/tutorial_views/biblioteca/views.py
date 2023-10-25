@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.db.models import Q
+from django.db.models import Q,Prefetch
 from .models import Libro,Cliente,Biblioteca
 
 # Create your views here.
@@ -41,7 +41,7 @@ def libros_no_prestados(request):
     return render(request, 'libro/lista.html',{"libros_mostrar":libros})
 
 def dame_biblioteca(request,id_biblioteca):
-    biblioteca = Biblioteca.objects.get(id=id_biblioteca)
+    biblioteca = Biblioteca.objects.prefetch_related(Prefetch("libros_biblioteca")).get(id=id_biblioteca)
     return render(request, 'biblioteca/biblioteca.html',{"biblioteca":biblioteca})
 
 #Páginas de Error
