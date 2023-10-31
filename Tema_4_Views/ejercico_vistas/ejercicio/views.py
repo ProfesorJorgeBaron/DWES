@@ -18,9 +18,10 @@ def index(request):
 """
 
 def listar_proyectos(request):
+    
     proyectos = (Proyecto.objects.select_related("creador")
                  .prefetch_related("colaboradores",Prefetch("proyecto_tareas"))
-                )
+                ).all()
     return render(request, "proyecto/lista.html", {"proyectos":proyectos})
    
 """
@@ -28,7 +29,7 @@ def listar_proyectos(request):
     ordenadas por fecha de creación descendente.
 """   
 def listar_tareas_proyecto(request,proyecto_id):
-    proyecto = Proyecto.objects.get(id=proyecto_id)
+    proyecto_mostrar = Proyecto.objects.get(id=proyecto_id)
 
     tareas = (Tarea.objects.select_related("creador","proyecto").
               prefetch_related("usuarios_asignados",Prefetch("etiquetas_tareas"),
@@ -36,9 +37,9 @@ def listar_tareas_proyecto(request,proyecto_id):
                                Prefetch("comentarios_tarea__autor")  
                                )
             )
-    tareas = tareas.filter(proyecto=proyecto_id).all()
+    tareas = tareas.filter(proyecto=proyecto_id).order_by("-fecha_creacion").all()
     
-    return render(request, "tarea/lista.html", {"tareas":tareas, "proyecto":proyecto})
+    return render(request, "tarea/lista.html", {"tareas":tareas, "proyecto":proyecto_mostrar})
    
 
 """
@@ -105,10 +106,17 @@ def listar_tareas_anyos(request,anyo_desde,anyo_hasta):
 def ultimo_comentario_proyecto(request,proyecto_id):
     comentario = (Comentario.objects.select_related("autor","tarea").
                    prefetch_related(Prefetch("tarea__proyecto"))
-                  .filter(tarea__proyecto=proyecto_id).order_by("-fecha_comentario")[0:1].get()                        
+                  .filter(tarea__proyecto=proyecto_id)
+                  .order_by("-fecha_comentario")[0:1].get()                        
     )
+    usuario = comentario.autor
     
-    return render(request, "comentario/ultimo_comentario.html", {"comentario":comentario})
+    
+    """usuario = (Usuario.objects.filter(comentarios_creador__tarea__proyecto=proyecto_id).
+                order_by("-comentarios_creador__fecha_comentario")[:1].get()
+              )"""
+    
+    return render(request, "usuario/usuario.html", {"usuario":usuario})
     
     
 """

@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 # Create your models here.
 
+
 class Usuario(models.Model):
     nombre=models.CharField(max_length=50)
     email=models.CharField(max_length=100,unique=True)

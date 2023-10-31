@@ -16,7 +16,7 @@ urlpatterns = [
     
     path('tareas/<int:anyo_desde>/<int:anyo_hasta>',views.listar_tareas_anyos,name='listar_tareas_anyos'), 
     
-    path('cometario/ultimo/proyecto/<int:proyecto_id>/>',views.ultimo_comentario_proyecto,name='ultimo_comentario_proyecto'),
+    path('cometario/ultimo/proyecto/<int:proyecto_id>/',views.ultimo_comentario_proyecto,name='ultimo_comentario_proyecto'),
     
     path('cometarios/tarea/<int:tarea_id>/<int:anyo>/<str:texto>/',views.listar_comentarios_filtro,name='listar_comentarios_filtro'),
     
