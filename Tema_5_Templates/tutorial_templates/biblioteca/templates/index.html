@@ -1,0 +1,15 @@
+{% extends "principal.html" %}
+
+{% block cabecera %}
+    <h1>Ejemplo de Template Tag block</h1>
+{% endblock %}
+
+{% block contenido %}
+
+    <h2>Listado de enlaces</h2>
+    <ul>
+        <li><a href="{% url 'lista_libros' %}">Libros</a></li>
+        <li><a href="{% url 'dame_libro' 10 %}">Ver libro 10</a></li>
+    </ul>
+
+{% endblock %}

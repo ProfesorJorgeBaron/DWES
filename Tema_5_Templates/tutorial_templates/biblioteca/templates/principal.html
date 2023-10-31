@@ -1,0 +1,21 @@
+<html>
+    {% load static %}
+    <head>
+        <title>Mi biblioteca Online</title>
+        <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+        <script src="{% static 'javascript/tutorial.js' %}"></script>
+    </head>
+    <body>
+    
+    <img src="{% static  'imagenes/imagen.png' %}" alt="Imagen de Django"> 
+    
+    <h1>BIBLIOTECA ONLINE</h1>
+
+        {% block cabecera %}
+        {% endblock %}
+
+        {% block contenido %}
+        {% endblock %}
+
+    </body>
+</html>
