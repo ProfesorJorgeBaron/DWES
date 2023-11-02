@@ -1,0 +1,30 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <img src="{% static  'imagenes/logo.png' %}" 
+            alt="" width="100" height="50" 
+            class="d-inline-block align-text-middle">
+        Mi Biblioteca Online
+      </a>
+      <div class="collapse navbar-collapse" id="accionesLibros">
+        <ul class="navbar-nav">
+          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" 
+                id="accionesLibrosLink" 
+                role="button" 
+                data-bs-toggle="dropdown" 
+                aria-expanded="false">
+              Libros
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="accionesLibrosLink">
+              <li><a class="dropdown-item" href="">Ver Libros</a></li>
+              <li><a class="dropdown-item" href="{% url 'libro_create' %}">Crear Libro</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+</nav>

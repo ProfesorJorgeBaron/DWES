@@ -1,0 +1,18 @@
+<div class="col-sm-4 mb-2">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title"> {{ libro.nombre|capfirst }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Biblioteca {{ libro.biblioteca.nombre }}</h6>
+            <p class="card-text">Fecha Publicacion: {{ libro.fecha_publicacion|date:"d-m-Y" }}</p>
+            <p class="card-text">{{ libro.descripcion }}</p>
+            <div>
+                <p class="card-text" >Autores</p>
+                <ul>
+                    {% for autor in libro.autores.all %}
+                        <li class="card-text" >{{ autor.nombre }}</li>
+                    {% endfor%}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
