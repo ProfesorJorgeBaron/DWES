@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Tutorial Formularios",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/Tema_6_Formularios/tutorial_formularios/manage.py",
+            "args": [
+                "runserver"
+            ],
+            "django": true,
+            "justMyCode": true
+        },
+        {
             "name": "Tutorial Templates",
             "type": "python",
             "request": "launch",

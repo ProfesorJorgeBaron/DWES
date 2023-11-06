@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from .models import *
 from datetime import date
 import datetime
-
+from bootstrap_datepicker_plus.widgets import DatePickerInput
 
 class LibroForm(forms.Form):
     #Definimos un campo de tipo Texto para el nombre
@@ -66,10 +66,10 @@ class LibroForm(forms.Form):
         if len(descripcion) < 10:
             self.add_error('descripcion','Al menos debes indicar 3 caracteres')
         
-        #Comprobamos que la fecha de publicación sea mayor que hoy
+        #Comprobamos que la fecha de publicación sea menor que hoy
         fechaHoy = date.today().strftime("%d-%m-%Y")
         if fechaHoy < fecha_publicacion :
-             self.add_error('fecha_publicacion','La fecha de publicacion debe ser mayor a Hoy')
+             self.add_error('fecha_publicacion','La fecha de publicacion debe ser menor a Hoy')
         
         #Comprobamos que el idioma no pueda ser en Francés si se ha seleccionado la Biblioteca de la Universidad de Sevilla
         if idioma == "FR" & biblioteca.id == 3:
@@ -114,18 +114,19 @@ class LibroModelForm(ModelForm):
         autores = self.cleaned_data.get('autores')
  
         #Comprobamos que no exista un libro con ese nombre
-        libroNombre = Libro.objects.filter(nombre=nombre).all()
-        if(len(libroNombre) >= 1):
+        libroNombre = Libro.objects.filter(nombre=nombre).first()
+        if(not (libroNombre is None
+                or (not self.instance is None and libroNombre.id == self.instance.id)
+                )
+           ):
              self.add_error('nombre','Ya existe un libro con ese nombre')
 
         #Comprobamos que el campo descripción no tenga menos de 10 caracteres        
         if len(descripcion) < 10:
-            self.add_error('descripcion','Al menos debes indicar 3 caracteres')
+            self.add_error('descripcion','Al menos debes indicar 10 caracteres')
         
         #Comprobamos que la fecha de publicación sea mayor que hoy
         fechaHoy = date.today()
-        print(fechaHoy)
-        print(fecha_publicacion)
         if fechaHoy < fecha_publicacion :
              self.add_error('fecha_publicacion','La fecha de publicacion debe ser mayor a Hoy')
         
@@ -138,5 +139,65 @@ class LibroModelForm(ModelForm):
         if len(autores) < 2:
              self.add_error('autores','Debe seleccionar al menos dos autores')
         
+        #Siempre devolvemos el conjunto de datos.
+        return self.cleaned_data
+
+class BusquedaLibroForm(forms.Form):
+    textoBusqueda = forms.CharField(required=True)
+    
+
+class BusquedaAvanzadaLibroForm(forms.Form):
+    
+    textoBusqueda = forms.CharField(required=False)
+    
+  
+    idiomas = forms.MultipleChoiceField(choices=Libro.IDIOMAS,
+                                required=False,
+                                widget=forms.CheckboxSelectMultiple()
+                               )
+    
+    fecha_desde = forms.DateField(label="Fecha Desde",
+                                required=False,
+                                widget= forms.SelectDateWidget(years=range(1990,2023))
+                                )
+    
+    fecha_hasta = forms.DateField(label="Fecha Desde",
+                                  required=False,
+                                  widget= forms.SelectDateWidget(years=range(1990,2023))
+                                  )
+    
+    
+    def clean(self):
+ 
+        #Validamos con el modelo actual
+        super().clean()
+        
+        #Obtenemos los campos 
+        textoBusqueda = self.cleaned_data.get('textoBusqueda')
+        idiomas = self.cleaned_data.get('idiomas')
+        fecha_desde = self.cleaned_data.get('fecha_desde')
+        fecha_hasta = self.cleaned_data.get('fecha_hasta')
+           
+        #Controlamos los campos
+        #Ningún campo es obligatorio, pero al menos debe introducir un valor en alguno para buscar
+        if(textoBusqueda == "" 
+           and len(idiomas) == 0
+           and fecha_desde is None
+           and fecha_hasta is None
+           ):
+            self.add_error('textoBusqueda','Debe introducir al menos un valor en un campo del formulario')
+            self.add_error('idiomas','Debe introducir al menos un valor en un campo del formulario')
+            self.add_error('fecha_desde','Debe introducir al menos un valor en un campo del formulario')
+            self.add_error('fecha_hasta','Debe introducir al menos un valor en un campo del formulario')
+        else:
+            #Si introduce un texto al menos que tenga  3 caracteres o más
+            if(textoBusqueda != "" and len(textoBusqueda) < 3):
+                self.add_error('textoBusqueda','Debe introducir al menos 3 caracteres')
+            
+            #La fecha hasta debe ser mayor o igual a fecha desde. Pero sólo se valida si han introducido ambas fechas
+            if(not fecha_desde is None  and not fecha_hasta is None and fecha_hasta < fecha_desde):
+                self.add_error('fecha_desde','La fecha hasta no puede ser menor que la fecha desde')
+                self.add_error('fecha_hasta','La fecha hasta no puede ser menor que la fecha desde')
+            
         #Siempre devolvemos el conjunto de datos.
         return self.cleaned_data

@@ -9,12 +9,16 @@
         {% load bootstrap5 %}
         {% bootstrap_css %}
 
+        {% block cabecera_extra %}
+        {% endblock %}
+
     </head>
     <body>
         
         {% include 'estructura/menu.html' %}
 
         <div class="container p-2">
+
             {% block contenido %}
             {% endblock %}    
         </div>

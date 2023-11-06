@@ -1,7 +1,6 @@
 {% extends "estructura/principal.html" %}
 
 {% block contenido %}
-{% load bootstrap5 %}
 <form action = "" method = "post"> 
     
     {% csrf_token %} 
@@ -9,7 +8,5 @@
     {% buttons %}
     <button type="submit" class="btn btn-primary">Enviar</button>
     {% endbuttons %}
-</form> 
-
-
+</form>
 {% endblock %}
