@@ -1,6 +1,8 @@
 from django.shortcuts import render
-from django.db.models import Q,Prefetch
+from django.db.models import Q,F,Prefetch
+from django.db.models import Avg,Max,Min
 from .models import Libro,Cliente,Biblioteca
+
 
 # Create your views here.
 def index(request):
@@ -119,6 +121,21 @@ def dame_biblioteca(request,id_biblioteca):
             )[0] 
     """
     return render(request, 'biblioteca/biblioteca.html',{"biblioteca":biblioteca})
+
+#Una url que muestre los libros que contengan en la descripcion el titulo del libro
+def dame_libros_titulo_en_descripcion(request):
+    libros = Libro.objects.select_related("biblioteca").prefetch_related("autores")
+    libros = libros.filter(descripcion__contains=F("nombre"))
+  
+    return render(request, 'libro/lista.html',{"libros_mostrar":libros})
+
+#Una url que muestra la media, máximo y  mínimo de puntos de todos los clientes de la Biblioteca
+def dame_agrupaciones_puntos_cliente(request):
+    resultado = Cliente.objects.aggregate(Avg("puntos"),Max("puntos"),Min("puntos"))
+    media = resultado["puntos__avg"]
+    maximo = resultado["puntos__max"]
+    minimo = resultado["puntos__min"]
+    return render(request, 'cliente/agrupaciones.html',{"media":media,"maximo":maximo,"minimo":minimo})            
 
 #Páginas de Error
 def mi_error_404(request,exception=None):
