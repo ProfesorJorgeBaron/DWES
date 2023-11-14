@@ -2,8 +2,10 @@
     {% load static %}
     <head>
         <title>Mi biblioteca Online</title>
+        {% block link_css %}
+        {% endblock%}
         <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
-        <script src="{% static 'javascript/tutorial.js' %}"></script>
+        
     </head>
     <body>
     
@@ -11,11 +13,13 @@
     
     <h1>BIBLIOTECA ONLINE</h1>
 
-        {% block cabecera %}
-        {% endblock %}
+        {% include 'estructura/menu.html' %}
 
+        
         {% block contenido %}
         {% endblock %}
+
+        {% include 'estructura/pie.html' %}
 
     </body>
 </html>

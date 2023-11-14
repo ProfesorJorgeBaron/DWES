@@ -1,5 +1,10 @@
 {% extends "principal.html" %}
 
+{% load static %}
+{% block link_css %}
+    <link rel="stylesheet" href="{% static 'css/menu.css' %}">
+{% endblock %}
+
 {% block cabecera %}
     <h1>Ejemplo de Template Tag block</h1>
 {% endblock %}

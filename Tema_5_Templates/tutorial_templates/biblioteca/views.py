@@ -14,7 +14,7 @@ def listar_libros(request):
 def dame_libro(request,id_libro):
     QSlibro = Libro.objects.select_related("biblioteca").prefetch_related("autores")
     libro = QSlibro.get(id=id_libro)
-    return render(request, 'libro/libro.html',{"libro":libro})
+    return render(request, 'libro/mostrar_libro.html',{"libro":libro})
 
 def dame_libros_fecha(request,anyo_libro,mes_libro):
     libros = Libro.objects.prefetch_related("autores").select_related("biblioteca")
