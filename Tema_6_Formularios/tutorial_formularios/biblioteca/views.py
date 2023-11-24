@@ -10,6 +10,24 @@ from datetime import datetime
 # Create your views here.
 def index(request):
     return render(request, 'index.html') 
+
+def libro_create_sencillo(request):
+    
+    datosFormulario = None
+    if request.method == "POST":
+        datosFormulario = request.POST
+        
+    formulario = LibroModelForm(datosFormulario)
+    if (request.method == "POST"):
+        if formulario.is_valid():
+            try:
+                # Guarda el libro en la base de datos
+                formulario.save()
+                return redirect("libro_lista")
+            except Exception as error:
+                print(error)
+    
+    return render(request, 'libro/create.html',{"formulario":formulario})  
     
 def libro_create(request):
     
@@ -59,8 +77,8 @@ def crear_libro_generico(formulario):
             # Guarda el libro en la base de datos
             libro.save()
             libro_creado = True
-        except:
-            pass
+        except Exception as error:
+            print(error)
     return libro_creado
 
 def crear_libro_modelo(formulario):
@@ -71,8 +89,8 @@ def crear_libro_modelo(formulario):
             # Guarda el libro en la base de datos
             formulario.save()
             libro_creado = True
-        except:
-            pass
+        except Exception as error:
+            print(error)
     return libro_creado
     
     
@@ -89,7 +107,7 @@ def libro_mostrar(request,libro_id):
 
 def libro_buscar(request):
     
-    formulario = BusquedaLibroForm(request.POST)
+    formulario = BusquedaLibroForm(request.GET)
     
     if formulario.is_valid():
         texto = formulario.cleaned_data.get('textoBusqueda')
@@ -128,12 +146,12 @@ def libro_buscar_avanzado(request):
             #Si hay idiomas, iteramos por ellos, creamos la queryOR y le aplicamos el filtro
             if(len(idiomas) > 0):
                 mensaje_busqueda +=" El idioma sea "+idiomas[0]
-                queryOR = Q(idioma=idiomas[0])
+                filtroOR = Q(idioma=idiomas[0])
                 for idioma in idiomas[1:]:
                     mensaje_busqueda += " o "+idiomas[1]
-                    queryOR |= Q(idioma=idioma)
+                    filtroOR |= Q(idioma=idioma)
                 mensaje_busqueda += "\n"
-                QSlibros =  QSlibros.filter(queryOR)
+                QSlibros =  QSlibros.filter(filtroOR)
             
             #Comprobamos fechas
             #Obtenemos los libros con fecha publicacion mayor a la fecha desde
@@ -144,7 +162,7 @@ def libro_buscar_avanzado(request):
              #Obtenemos los libros con fecha publicacion menor a la fecha desde
             if(not fechaHasta is None):
                 mensaje_busqueda +=" La fecha sea menor a "+datetime.strftime(fechaHasta,'%d-%m-%Y')+"\n"
-                QSlibros = QSlibros.filter(fecha_publicacion__lte=fechaDesde)
+                QSlibros = QSlibros.filter(fecha_publicacion__lte=fechaHasta)
             
             libros = QSlibros.all()
     
@@ -174,8 +192,8 @@ def libro_editar(request,libro_id):
                 formulario.save()
                 messages.success(request, 'Se ha editado el libro'+formulario.cleaned_data.get('nombre')+" correctamente")
                 return redirect('libro_lista')  
-            except Exception as e: 
-                pass
+            except Exception as error:
+                print(error)
     return render(request, 'libro/actualizar.html',{"formulario":formulario,"libro":libro})
     
 
@@ -184,8 +202,8 @@ def libro_eliminar(request,libro_id):
     try:
         libro.delete()
         messages.success(request, "Se ha elimnado el libro "+libro.nombre+" correctamente")
-    except:
-        pass
+    except Exception as error:
+        print(error)
     return redirect('libro_lista')
     
 #Páginas de Error

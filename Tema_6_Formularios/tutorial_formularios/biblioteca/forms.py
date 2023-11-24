@@ -86,7 +86,7 @@ class LibroForm(forms.Form):
 class LibroModelForm(ModelForm):   
     class Meta:
         model = Libro
-        fields = ['nombre','descripcion','fecha_publicacion','idioma','biblioteca','autores']
+        fields = ['nombre','descripcion','fecha_publicacion','idioma','biblioteca','autores','fecha_actualizacion']
         labels = {
             "nombre": ("Nombre del Libro"),
         }
@@ -95,7 +95,8 @@ class LibroModelForm(ModelForm):
             "autores":("Mantén pulsada la tecla control para seleccionar varios elementos")
         }
         widgets = {
-            "fecha_publicacion":forms.SelectDateWidget()
+            "fecha_publicacion":forms.SelectDateWidget(),
+            "fecha_actualizacion":forms.SelectDateWidget()
         }
         localized_fields = ["fecha_publicacion"]
     
@@ -131,7 +132,7 @@ class LibroModelForm(ModelForm):
              self.add_error('fecha_publicacion','La fecha de publicacion debe ser mayor a Hoy')
         
         #Comprobamos que el idioma no pueda ser en Francés si se ha seleccionado la Biblioteca de la Universidad de Sevilla
-        if idioma == "FR" and biblioteca.id == 3:
+        if idioma == "FR" and biblioteca.id == 4:
              self.add_error('idioma','No puede usar la Biblioteca de la Universidad de Sevilla y el idioma Fránces')
              self.add_error('biblioteca','No puede usar la Biblioteca de la Universidad de Sevilla y el idioma Fránces')
  

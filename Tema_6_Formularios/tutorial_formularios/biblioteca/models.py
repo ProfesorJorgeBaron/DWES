@@ -37,6 +37,7 @@ class Libro(models.Model):
     
     descripcion = models.TextField()
     fecha_publicacion = models.DateField()
+    fecha_actualizacion = models.DateTimeField(default=timezone.now)
     biblioteca = models.ForeignKey(Biblioteca, on_delete = models.CASCADE,related_name="libros_biblioteca")
     autores =   models.ManyToManyField(Autor,related_name="libros_autores")
 
