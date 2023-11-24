@@ -187,7 +187,6 @@ def libro_editar(request,libro_id):
     if (request.method == "POST"):
        
         if formulario.is_valid():
-            formulario.save()
             try:  
                 formulario.save()
                 messages.success(request, 'Se ha editado el libro'+formulario.cleaned_data.get('nombre')+" correctamente")
