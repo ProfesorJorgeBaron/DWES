@@ -28,7 +28,25 @@ def libro_create_sencillo(request):
                 print(error)
     
     return render(request, 'libro/create.html',{"formulario":formulario})  
-    
+
+#Esta funcion es igual que la anterior pero con el
+# código estructurado de otra forma
+def libro_create_sencillo2(request):
+    if request.method == "POST":
+        formulario = LibroModelForm(request.POST)
+        if formulario.is_valid():
+            try:
+                # Guarda el libro en la base de datos
+                formulario.save()
+                return redirect("libro_lista")
+            except Exception as error:
+                print(error)
+    else:
+        formulario = LibroModelForm()
+          
+    return render(request, 'libro/create.html',{"formulario":formulario})  
+  
+   
 def libro_create(request):
     
     # Si la petición es GET se creará el formulario Vacío
