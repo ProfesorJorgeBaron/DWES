@@ -157,8 +157,8 @@ def libro_buscar_avanzado(request):
             
             #Por cada filtro comprobamos si tiene un valor y lo añadimos a la QuerySet
             if(textoBusqueda != ""):
-                QSlibros = QSlibros.filter(Q(nombre__contains=texto) | Q(descripcion__contains=texto))
-                mensaje_busqueda +=" Nombre o contenido que contengan la palabra "+texto+"\n"
+                QSlibros = QSlibros.filter(Q(nombre__contains=textoBusqueda) | Q(descripcion__contains=textoBusqueda))
+                mensaje_busqueda +=" Nombre o contenido que contengan la palabra "+textoBusqueda+"\n"
             
             #Si hay idiomas, iteramos por ellos, creamos la queryOR y le aplicamos el filtro
             if(len(idiomas) > 0):
