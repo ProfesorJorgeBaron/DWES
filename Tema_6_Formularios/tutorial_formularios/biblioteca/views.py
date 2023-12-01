@@ -147,7 +147,6 @@ def libro_buscar_avanzado(request):
             
             mensaje_busqueda = "Se ha buscado por los siguientes valores:\n"
             
-            texto = formulario.cleaned_data.get('textoBusqueda')
             QSlibros = Libro.objects.select_related("biblioteca").prefetch_related("autores")
             
             #obtenemos los filtros
