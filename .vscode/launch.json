@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Tutorial Sesiones y Permisos",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/Tema_7_Sesiones_Permisos/manage.py",
+            "args": [
+                "runserver"
+            ],
+            "django": true,
+            "justMyCode": true
+        },
+        {
             "name": "Tutorial Formularios",
             "type": "python",
             "request": "launch",
