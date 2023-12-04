@@ -18,4 +18,10 @@ urlpatterns = [
     
     path('libro/eliminar/<int:libro_id>',views.libro_eliminar,name='libro_eliminar'),
     
+    path('registrar',views.registrar_usuario,name='registrar_usuario'),
+    
+    path('prestamo/crear',views.prestamo_crear,name='prestamo_crear'),
+    
+    path('prestamo/listar/<int:usuario_id>',views.prestamo_lista_usuario,name='prestamo_lista_usuario'),
+    
 ]

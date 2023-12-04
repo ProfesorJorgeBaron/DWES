@@ -4,12 +4,20 @@ from django.forms import modelform_factory
 from .models import *
 from .forms import *
 from django.contrib import messages
+from django.contrib.auth import login
 
 from datetime import datetime
 
 # Create your views here.
 def index(request):
-    return render(request, 'index.html') 
+    
+    if(not "fecha_inicio" in request.session):
+        request.session["fecha_inicio"] = datetime.now().strftime('%d/%m/%Y %H:%M')
+    return render(request, 'index.html')
+
+def borrar_session(request):
+    del request.session['fecha_inicio']
+    return render(request, 'index.html')
 
 def libro_create_sencillo(request):
     
@@ -224,6 +232,36 @@ def libro_eliminar(request,libro_id):
         print(error)
     return redirect('libro_lista')
     
+def registrar_usuario(request):
+    if request.method == 'POST':
+        formulario = RegistroForm(request.POST)
+        if formulario.is_valid():
+            user = formulario.save()
+            login(request, user)
+            return redirect('index')
+    else:
+        formulario = RegistroForm()
+    return render(request, 'registration/signup.html', {'formulario': formulario})
+
+def prestamo_crear(request):
+    if request.method == 'POST':
+        formulario = PrestamoForm(request.POST)
+        if formulario.is_valid():
+            try:
+                formulario.save()
+                return redirect("prestamo_lista_usuario",usuario_id=request.user.id)
+            except Exception as error:
+                print(error)
+    else:
+        formulario = PrestamoForm(initial={"cliente":request.user})
+    return render(request, 'prestamo/create.html', {'formulario': formulario})
+
+def prestamo_lista_usuario(request,usuario_id):
+    cliente = Cliente.objects.get(id=usuario_id)
+    prestamos = Prestamo.objects.select_related("libro")
+    prestamos = prestamos.filter(cliente=usuario_id).all()
+    return render(request, 'prestamo/lista.html',{"prestamos_mostrar":prestamos,"cliente":cliente})
+
 #Páginas de Error
 def mi_error_404(request,exception=None):
     return render(request, 'errores/404.html',None,None,404)

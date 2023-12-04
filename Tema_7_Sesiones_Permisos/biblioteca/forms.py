@@ -4,6 +4,7 @@ from .models import *
 from datetime import date
 import datetime
 from bootstrap_datepicker_plus.widgets import DatePickerInput
+from django.contrib.auth.forms import UserCreationForm
 
 class LibroForm(forms.Form):
     #Definimos un campo de tipo Texto para el nombre
@@ -138,8 +139,8 @@ class LibroModelForm(ModelForm):
              self.add_error('biblioteca','No puede usar la Biblioteca de la Universidad de Sevilla y el idioma Fránces')
  
         #Que al menos seleccione dos autores
-        if len(autores) < 2:
-             self.add_error('autores','Debe seleccionar al menos dos autores')
+        if len(autores) < 1:
+             self.add_error('autores','Debe seleccionar al menos un autor')
         
         #Siempre devolvemos el conjunto de datos.
         return self.cleaned_data
@@ -203,3 +204,20 @@ class BusquedaAvanzadaLibroForm(forms.Form):
             
         #Siempre devolvemos el conjunto de datos.
         return self.cleaned_data
+
+
+
+class RegistroForm(UserCreationForm):
+    email = forms.EmailField(max_length=200, help_text='Required')
+
+    class Meta:
+        model = Cliente
+        fields = ('username', 'email', 'password1', 'password2')
+
+class PrestamoForm(ModelForm):
+    class Meta:
+        model = Prestamo
+        fields = ('libro','cliente')
+        widgets = {
+            "cliente":forms.HiddenInput()
+        }

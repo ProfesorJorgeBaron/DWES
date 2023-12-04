@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
@@ -37,20 +38,19 @@ class Libro(models.Model):
     
     descripcion = models.TextField()
     fecha_publicacion = models.DateField()
-    fecha_actualizacion = models.DateTimeField(default=timezone.now)
+    fecha_actualizacion = models.DateTimeField(default=timezone.now,blank=True)
     biblioteca = models.ForeignKey(Biblioteca, on_delete = models.CASCADE,related_name="libros_biblioteca")
     autores =   models.ManyToManyField(Autor,related_name="libros_autores")
 
-
+    def __str__(self):
+        return self.nombre
     
-class Cliente(models.Model):
-    nombre = models.CharField(max_length=100)
-    email = models.EmailField(max_length=200,unique=True)
-    password = models.CharField(max_length=100)
+class Cliente(AbstractUser):
     puntos = models.FloatField(default=5.0,db_column = "puntos_biblioteca")
     libros = models.ManyToManyField(Libro, through='Prestamo',related_name='prestamos_libros')
-
-
+    
+    def __str__(self):
+        return self.first_name + " "+ self.last_name
     
 class DatosCliente(models.Model):
      cliente = models.OneToOneField(Cliente, 
@@ -63,5 +63,5 @@ class DatosCliente(models.Model):
 class Prestamo(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
-    fecha_prestamo = models.DateTimeField(default=timezone.now)
+    fecha_prestamo = models.DateTimeField(default=timezone.now,blank=True)
         
