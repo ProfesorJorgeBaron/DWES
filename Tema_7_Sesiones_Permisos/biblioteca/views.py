@@ -5,6 +5,8 @@ from .models import *
 from .forms import *
 from django.contrib import messages
 from django.contrib.auth import login
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.models import Group
 
 from datetime import datetime
 
@@ -54,7 +56,8 @@ def libro_create_sencillo2(request):
           
     return render(request, 'libro/create.html',{"formulario":formulario})  
   
-   
+
+@permission_required('biblioteca.add_libro')
 def libro_create(request):
     
     # Si la petición es GET se creará el formulario Vacío
@@ -237,29 +240,78 @@ def registrar_usuario(request):
         formulario = RegistroForm(request.POST)
         if formulario.is_valid():
             user = formulario.save()
+            rol = int(formulario.cleaned_data.get('rol'))
+            if(rol == Usuario.CLIENTE):
+                grupo = Group.objects.get(name='Clientes') 
+                grupo.user_set.add(user)
+                cliente = Cliente.objects.create( usuario = user)
+                cliente.save()
+            elif(rol == Usuario.BIBLIOTECARIO):
+                grupo = Group.objects.get(name='Bibliotecarios') 
+                grupo.user_set.add(user)
+                bibliotecario = Bibliotecario.objects.create(usuario = user)
+                bibliotecario.save()
+            
             login(request, user)
             return redirect('index')
     else:
         formulario = RegistroForm()
     return render(request, 'registration/signup.html', {'formulario': formulario})
 
+@permission_required('biblioteca.add_prestamo')
 def prestamo_crear(request):
     if request.method == 'POST':
         formulario = PrestamoForm(request.POST)
         if formulario.is_valid():
             try:
                 formulario.save()
-                return redirect("prestamo_lista_usuario",usuario_id=request.user.id)
+                return redirect("prestamo_lista_usuario",usuario_id=request.user.cliente.id)
             except Exception as error:
                 print(error)
     else:
-        formulario = PrestamoForm(initial={"cliente":request.user})
+        formulario = PrestamoForm(initial={"cliente":request.user.cliente})
+    return render(request, 'prestamo/create.html', {'formulario': formulario})
+
+@permission_required('biblioteca.add_prestamo')
+def prestamo_crear_generico(request):
+    if request.method == 'POST':
+        formulario = PrestamoFormGenerico(request.POST)
+        if formulario.is_valid():
+            try:
+                prestamo = Prestamo.objects.create(
+                    libro = formulario.cleaned_data.get('libro'),
+                    cliente = request.user.cliente,
+                )
+                prestamo.save()
+                return redirect("prestamo_lista_usuario",usuario_id=request.user.cliente.id)
+            except Exception as error:
+                print(error)
+    else:
+        formulario = PrestamoFormGenerico()
+    return render(request, 'prestamo/create.html', {'formulario': formulario})
+
+@permission_required('biblioteca.add_prestamo')
+def prestamo_crear_generico_con_request(request):
+    if request.method == 'POST':
+        formulario = PrestamoFormGenericoRequest(request.POST,request=request)
+        if formulario.is_valid():
+            try:
+                prestamo = Prestamo.objects.create(
+                    libro = formulario.cleaned_data.get('libro'),
+                    cliente = request.user.cliente,
+                )
+                prestamo.save()
+                return redirect("prestamo_lista_usuario",usuario_id=request.user.cliente.id)
+            except Exception as error:
+                print(error)
+    else:
+        formulario = PrestamoFormGenericoRequest(None,request=request)
     return render(request, 'prestamo/create.html', {'formulario': formulario})
 
 def prestamo_lista_usuario(request,usuario_id):
-    cliente = Cliente.objects.get(id=usuario_id)
+    cliente = Cliente.objects.filter(usuario_id=usuario_id).get()
     prestamos = Prestamo.objects.select_related("libro")
-    prestamos = prestamos.filter(cliente=usuario_id).all()
+    prestamos = prestamos.filter(cliente=cliente.id).all()
     return render(request, 'prestamo/lista.html',{"prestamos_mostrar":prestamos,"cliente":cliente})
 
 #Páginas de Error

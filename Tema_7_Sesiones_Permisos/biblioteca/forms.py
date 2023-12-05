@@ -207,12 +207,16 @@ class BusquedaAvanzadaLibroForm(forms.Form):
 
 
 
-class RegistroForm(UserCreationForm):
-    email = forms.EmailField(max_length=200, help_text='Required')
-
+class RegistroForm(UserCreationForm): 
+    roles = (
+                                (Usuario.CLIENTE, 'cliente'),
+                                (Usuario.BIBLIOTECARIO, 'bibliotecario'),
+            )   
+    rol = forms.ChoiceField(choices=roles)  
     class Meta:
-        model = Cliente
-        fields = ('username', 'email', 'password1', 'password2')
+        model = Usuario
+        fields = ('username', 'email', 'password1', 'password2','rol')
+        
 
 class PrestamoForm(ModelForm):
     class Meta:
@@ -221,3 +225,28 @@ class PrestamoForm(ModelForm):
         widgets = {
             "cliente":forms.HiddenInput()
         }
+
+
+class PrestamoFormGenerico(forms.Form):
+     #Definimos un campo Select para seleccionar una el libro del prestamo
+    librosdisponibles = Libro.objects.all()
+    libro = forms.ModelChoiceField(
+            queryset=librosdisponibles,
+            widget=forms.Select,
+            required=True,
+            empty_label="Ninguna"
+    )
+    
+class PrestamoFormGenericoRequest(forms.Form):
+    
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super(PrestamoFormGenericoRequest, self).__init__(*args, **kwargs)
+        librosdisponibles = Libro.objects.exclude(prestamo__cliente=self.request.user.cliente).all()
+        self.fields["libro"] = forms.ModelChoiceField(
+            queryset=librosdisponibles,
+            widget=forms.Select,
+            required=True,
+            empty_label="Ninguna"
+        )
+        

@@ -40,12 +40,14 @@
           </a>
           <ul class="dropdown-menu" aria-labelledby="accionesLibrosLink">
             <li><a class="dropdown-item" href="{% url 'libro_lista' %}">Ver Libros</a></li>
-            <li><a class="dropdown-item" href="{% url 'libro_create' %}">Crear Libro</a></li>
+            {% if perms.biblioteca.add_libro %}
+              <li><a class="dropdown-item" href="{% url 'libro_create' %}">Crear Libro</a></li>
+            {% endif %}
             <li><a class="dropdown-item" href="{% url 'libro_buscar_avanzado' %}">Busqueda Avanzada de Libro</a></li>
           </ul>
         </li>
 
-        {% if request.user.is_authenticated %}
+        {% if request.user.is_authenticated and perms.biblioteca.add_prestamo %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" 
                 id="accionesPrestamoLink" 

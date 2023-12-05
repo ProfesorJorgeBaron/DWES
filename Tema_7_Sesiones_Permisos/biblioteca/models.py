@@ -4,9 +4,31 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
+        
+class Usuario(AbstractUser):
+    ADMINISTRADOR = 1
+    CLIENTE = 2
+    BIBLIOTECARIO = 3
+    ROLES = (
+        (ADMINISTRADOR, 'administardor'),
+        (CLIENTE, 'cliente'),
+        (BIBLIOTECARIO, 'bibliotecario'),
+    )
+    
+    rol  = models.PositiveSmallIntegerField(
+        choices=ROLES,default=1
+    )
+
+
+class Bibliotecario(models.Model):
+    usuario = models.OneToOneField(Usuario, 
+                             on_delete = models.CASCADE)
+
 class Biblioteca(models.Model):
     nombre = models.CharField(max_length=100)
     direccion = models.TextField()
+    
+    creador = models.ForeignKey(Bibliotecario, on_delete = models.CASCADE,related_name="creador_biblioteca")
     
     def __str__(self):
         return self.nombre
@@ -45,13 +67,17 @@ class Libro(models.Model):
     def __str__(self):
         return self.nombre
     
-class Cliente(AbstractUser):
+
+class Cliente(models.Model):
+    usuario = models.OneToOneField(Usuario, 
+                             on_delete = models.CASCADE)
     puntos = models.FloatField(default=5.0,db_column = "puntos_biblioteca")
     libros = models.ManyToManyField(Libro, through='Prestamo',related_name='prestamos_libros')
-    
+
     def __str__(self):
-        return self.first_name + " "+ self.last_name
-    
+        return self.usuario.username
+
+
 class DatosCliente(models.Model):
      cliente = models.OneToOneField(Cliente, 
                              on_delete = models.CASCADE)
@@ -64,4 +90,3 @@ class Prestamo(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
     fecha_prestamo = models.DateTimeField(default=timezone.now,blank=True)
-        
