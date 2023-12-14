@@ -59,7 +59,7 @@ class LibroForm(forms.Form):
         autores = self.cleaned_data.get('autores')
  
         #Comprobamos que no exista un libro con ese nombre
-        libroNombre = Libro.objects.get(nombre=nombre).get()
+        libroNombre = Libro.objects.get(nombre=nombre)
         if(not libroNombre is None):
              self.add_error('nombre','Ya existe un libro con ese nombre')
 
