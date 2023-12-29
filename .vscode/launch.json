@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Tutorial Despliegue",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/Tema_8_Despliegue/manage.py",
+            "args": [
+                "runserver"
+            ],
+            "django": true,
+            "justMyCode": true
+        },
+        {
             "name": "Tutorial Sesiones y Permisos",
             "type": "python",
             "request": "launch",
