@@ -1,0 +1,25 @@
+{% extends "estructura/principal.html" %}
+{% block contenido %}
+    <h1 class="display-3">Lista de Libros</h1>
+
+    <div class="row">
+        {% for libro in libros_mostrar %}
+            <div class="col-sm-4 mb-2">
+               
+                <p>nombre: {{libro.nombre}}</p>
+                <p>idioma: {{libro.idioma}}</p>
+                <p>descripcion: {{libro.descripcion}}</p>
+                <p>fecha_publicacion: {{libro.fecha_publicacion}}</p>
+                <p>biblioteca: {{libro.biblioteca.nombre }}</p>
+                <p>Autores:</p>
+                <ul>
+                {% for autor in libro.autores %}
+                    <li>{{ autor.nombre }}  {{ autor.apellidos }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% empty %}
+            <h1>Lo sentimos pero no hay libros</h1>
+        {% endfor %}
+    </div>
+{% endblock %}  

@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Tutorial API REST",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/Tema_9_API_REST/manage.py",
+            "args": [
+                "runserver"
+            ],
+            "django": true,
+            "justMyCode": true
+        },
+        {
             "name": "Tutorial Despliegue",
             "type": "python",
             "request": "launch",
