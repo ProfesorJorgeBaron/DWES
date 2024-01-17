@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Tutorial CLIENTE API",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/Tema_9_CLIENTE_API/manage.py",
+            "args": [
+                "runserver"
+            ],
+            "django": true,
+            "justMyCode": true
+        },
+        {
             "name": "Tutorial API REST",
             "type": "python",
             "request": "launch",

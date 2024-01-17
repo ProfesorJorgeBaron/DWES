@@ -21,3 +21,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include("cliente_api.urls"))
 ]
+
+
+from django.conf.urls import handler404,handler500
+handler404 = "cliente_api.views.mi_error_404"
+handler500 = "cliente_api.views.mi_error_500"
