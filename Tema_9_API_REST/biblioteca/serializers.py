@@ -3,7 +3,7 @@ from .models import *
                 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Libro
+        model = Usuario
         fields = ['username','first_name']
 
 
@@ -52,7 +52,17 @@ class LibroSerializerMejorado(serializers.ModelSerializer):
                   'autores')
         model = Libro
 
+
+class PrestamoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prestamo
+        fields = '__all__'
+
+
 class ClienteSerializer(serializers.ModelSerializer):
+    usuario = UsuarioSerializer()
+    libros = PrestamoSerializer(read_only=True,source="prestamo_set",many=True)
+    
     class Meta:
         model = Cliente
         fields = '__all__'
@@ -61,10 +71,4 @@ class ClienteSerializer(serializers.ModelSerializer):
 class DatosClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = DatosCliente
-        fields = '__all__'
-
-
-class PrestamoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Prestamo
         fields = '__all__'
