@@ -43,7 +43,9 @@
             {% if perms.biblioteca.add_libro %}
               <li><a class="dropdown-item" href="{% url 'libro_create' %}">Crear Libro</a></li>
             {% endif %}
-            <li><a class="dropdown-item" href="{% url 'libro_buscar_avanzado' %}">Busqueda Avanzada de Libro</a></li>
+            {% if request.user.is_authenticated %}
+              <li><a class="dropdown-item" href="{% url 'libro_buscar_avanzado' %}">Busqueda Avanzada de Libro</a></li>
+            {% endif %}
           </ul>
         </li>
 

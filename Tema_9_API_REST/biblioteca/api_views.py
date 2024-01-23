@@ -10,8 +10,8 @@ from .forms import *
 def libro_list(request):
     if(request.user.has_perm("biblioteca.view_libro")):
         libros = Libro.objects.all()
-        #serializer = LibroSerializer(libros, many=True)
-        serializer = LibroSerializerMejorado(libros, many=True)
+        serializer = LibroSerializer(libros, many=True)
+        #serializer = LibroSerializerMejorado(libros, many=True)
         return Response(serializer.data)
     else:
         return Response({"Sin permisos"}, status=status.HTTP_401_UNAUTHORIZED)

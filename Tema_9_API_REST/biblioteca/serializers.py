@@ -44,7 +44,12 @@ class LibroSerializerMejorado(serializers.ModelSerializer):
     idioma = serializers.CharField(source='get_idioma_display')
     
     class Meta:
-        fields = ('nombre','idioma','descripcion','fecha_publicacion','biblioteca','autores')
+        fields = ('nombre',
+                  'idioma',
+                  'descripcion',
+                  'fecha_publicacion',
+                  'biblioteca',
+                  'autores')
         model = Libro
 
 class ClienteSerializer(serializers.ModelSerializer):

@@ -13,9 +13,20 @@ from datetime import datetime
 # Create your views here.
 def index(request):
     
+    lista = []
+    lista.append("hola")
+    lista.append("adios")
+    lista.append("prueba")
+    
+    diccionario = []
+    diccionario.append("p1")
+    diccionario.append("p2")
+    diccionario.append("p3")
+    
+    
     if(not "fecha_inicio" in request.session):
         request.session["fecha_inicio"] = datetime.now().strftime('%d/%m/%Y %H:%M')
-    return render(request, 'index.html')
+    return render(request, 'index.html',{"lista":lista,"diccionario":diccionario})
 
 def borrar_session(request):
     del request.session['fecha_inicio']
@@ -244,7 +255,7 @@ def registrar_usuario(request):
             if(rol == Usuario.CLIENTE):
                 grupo = Group.objects.get(name='Clientes') 
                 grupo.user_set.add(user)
-                cliente = Cliente.objects.create( usuario = user)
+                cliente = Cliente.objects.create( usuario = user, puntos = 7.0)
                 cliente.save()
             elif(rol == Usuario.BIBLIOTECARIO):
                 grupo = Group.objects.get(name='Bibliotecarios') 
