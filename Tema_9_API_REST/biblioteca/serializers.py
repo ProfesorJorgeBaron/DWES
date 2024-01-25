@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from .forms import *
                 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -67,3 +68,41 @@ class DatosClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = DatosCliente
         fields = '__all__'
+
+
+class LibroSerializerCreate(serializers.ModelSerializer):
+    
+    biblioteca = BibliotecaSerializer()
+    
+    fecha_publicacion = serializers.DateField(format="%d-%m-%Y")
+    
+    class Meta:
+        model = Libro
+        fields = ['nombre','descripcion','fecha_publicacion','idioma','biblioteca','autores','fecha_actualizacion']
+    
+    def validate_nombre(self,nombre):
+        libroNombre = Libro.objects.filter(nombre=nombre).first()
+        if not libroNombre is None:
+            raise serializers.ValidationError('Ya existe un libro con ese nombre')
+        return nombre
+    
+    def validate_descripcion(self,descripcion):
+        if len(descripcion) < 10:
+             raise serializers.ValidationError('Al menos debes indicar 10 caracteres')
+        return descripcion
+    
+    def validate_fecha_publicacion(self,fecha_publicacion):
+        fechaHoy = date.today()
+        if fechaHoy < fecha_publicacion:
+            raise serializers.ValidationError('La fecha de publicacion debe ser mayor a Hoy')
+        return fecha_publicacion
+    
+    def validate(self,data):
+        raise serializers.ValidationError('No puede usar la Biblioteca de la Universidad de Sevilla y el idioma Fránces')
+        return data
+    
+    def validate_autores(self,autores):
+        
+        if len(autores) < 2:
+            raise serializers.ValidationError('Debe seleccionar al menos un autor')
+        return autores

@@ -35,7 +35,7 @@ def libro_buscar(request):
         else:
             return Response(formulario.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
-        return Response({"Sin permisos"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"Sin permisos"}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['GET'])
 def libro_buscar_avanzado(request):
@@ -81,3 +81,41 @@ def libro_buscar_avanzado(request):
     else:
         return Response({}, status=status.HTTP_400_BAD_REQUEST)
   
+@api_view(['GET'])
+def biblioteca_list(request):
+    bibliotecas = Biblioteca.objects.all()
+    serializer = BibliotecaSerializer(bibliotecas, many=True)
+    return Response(serializer.data)
+    
+@api_view(['GET'])
+def autor_list(request):
+    autores = Autor.objects.all()
+    serializer = AutorSerializer(autores, many=True)
+    return Response(serializer.data)
+'''
+@api_view(['POST'])
+def libro_create(request):
+    formulario = LibroModelForm(request.query_params)
+    if formulario.is_valid():
+        try:
+            formulario.save()
+            return Response("Libro CREADO")
+        except Exception as error:
+            print(error)
+            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(formulario.errors, status=status.HTTP_400_BAD_REQUEST)
+'''
+
+@api_view(['POST'])
+def libro_create(request):
+    serializers = LibroSerializerCreate(data=request.query_params)
+    if serializers.is_valid():
+        try:
+            serializers.save()
+            return Response("Libro CREADO")
+        except Exception as error:
+            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+    

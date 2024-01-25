@@ -26,4 +26,4 @@ urlpatterns = [
 ]
 
 from django.conf.urls import handler404
-handler404 = "biblioteca.views.mi_error_404"
+handler404 = 'rest_framework.exceptions.bad_request'
