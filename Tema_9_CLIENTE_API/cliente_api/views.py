@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
 from .forms import *
+from django.contrib import messages
 # Create your views here.
 #Vistas API
 
@@ -85,6 +86,31 @@ def libro_busqueda_avanzada(request):
     else:
         formulario = BusquedaAvanzadaLibroForm(None)
     return render(request, 'libro/busqueda_avanzada.html',{"formulario":formulario})
+
+def libro_crear(request):
+    
+    if (request.method == "POST"):
+        formulario = LibroForm(request.POST)
+        headers = crear_cabecera()
+        datos = formulario.data
+        datos["fecha_publicacion"] = datetime.date(year=int(datos['fecha_publicacion_year']),
+                                                    month=int(datos['fecha_publicacion_month']),
+                                                    day=int(datos['fecha_publicacion_day']))
+        
+        response = requests.post(
+            'http://127.0.0.1:8000/api/v1/libros/crear',
+            headers=headers,
+            params=formulario.data
+        )
+        if(response.status_code == requests.codes.ok):
+            return redirect("libro_lista")
+        else:
+            errores = response.json()
+            for error in errores:
+                formulario.add_error(error,errores[error])
+    else:
+         formulario = LibroForm(None)
+    return render(request, 'libro/create.html',{"formulario":formulario})
 
 #Páginas de Error
 def mi_error_404(request,exception=None):

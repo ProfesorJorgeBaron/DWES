@@ -1,0 +1,42 @@
+{% extends "estructura/principal.html" %}
+
+{% block contenido %}
+<form action = "" method = "post"> 
+    
+    {% load bootstrap5 %}
+    {% csrf_token %} 
+    
+    <div class="mb-4">
+        {% bootstrap_field formulario.nombre show_label=True %}
+    </div>
+
+    <div class="mb-4">
+        {% bootstrap_field formulario.descripcion show_label=True %}
+    </div>
+    
+    <div class="mb-4">
+        {% bootstrap_field formulario.idioma show_label=True %}
+    </div>
+    
+    <div class="mb-4">
+        {% bootstrap_field formulario.fecha_publicacion show_label=True %}
+        <div class="invalid-feedback">
+            {% for error in formulario.fecha_publicacion.errors %} 
+                {{ error }}
+            {% endfor %}
+        </div>
+    </div>      
+
+    <div class="mb-4">
+        {% bootstrap_field formulario.biblioteca show_label=True %}
+    </div>
+
+    <div class="mb-4">
+        {% bootstrap_field formulario.autores show_label=True %}
+    </div>
+
+    {% buttons %}
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    {% endbuttons %}
+</form>
+{% endblock %}

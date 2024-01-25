@@ -7,5 +7,5 @@ urlpatterns = [
     path('libros/listar',views.libros_lista,name='libro_lista'),
     path('libros/busqueda_simple',views.libro_busqueda_simple,name='libro_buscar_simple'),
     path('libros/busqueda_avanzada',views.libro_busqueda_avanzada,name='libro_buscar_avanzado'),
-    
+    path('libros/crear',views.libro_crear,name='libro_crear'),
 ]
