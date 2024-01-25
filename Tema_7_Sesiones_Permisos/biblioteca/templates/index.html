@@ -2,6 +2,12 @@
 
 {% block contenido %}
 {% load static %}
+
+{% for l in lista %}
+    <p>Lista {{ l }}</p>
+    <p>Diccionario   {{ diccionario|slice:forloop.counter|last}}</p>
+
+{% endfor %}
 <div class="row">
     <div class="col-md-12">
         <img src="{% static  'imagenes/biblioteca.jpg' %}" 

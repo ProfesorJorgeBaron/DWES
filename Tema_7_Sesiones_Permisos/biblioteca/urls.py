@@ -20,7 +20,7 @@ urlpatterns = [
     
     path('registrar',views.registrar_usuario,name='registrar_usuario'),
     
-    path('prestamo/crear',views.prestamo_crear,name='prestamo_crear'),
+    path('prestamo/crear',views.prestamo_crear_generico,name='prestamo_crear'),
     
     path('prestamo/listar/<int:usuario_id>',views.prestamo_lista_usuario,name='prestamo_lista_usuario'),
     
