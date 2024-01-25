@@ -40,7 +40,7 @@ def libro_busqueda_simple(request):
         response = requests.get(
             'http://127.0.0.1:8000/api/v1/libros/busqueda_simple',
             headers=headers,
-            params=formulario.cleaned_data
+            params={'textoBusqueda':formulario.data.get("textoBusqueda")}
         )
         libros = response.json()
         return render(request, 'libro/lista_mejorada.html',{"libros_mostrar":libros})
@@ -70,7 +70,7 @@ def libro_busqueda_avanzada(request):
                 response.raise_for_status()
         except HTTPError as http_err:
             print(f'Hubo un error en la petición: {http_err}')
-            if(http_err == 400):
+            if(response.status_code == 400):
                 errores = response.json()
                 for error in errores:
                     formulario.add_error(error,errores[error])

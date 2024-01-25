@@ -9,15 +9,9 @@ from django.db.models import Q,Prefetch
 @api_view(['GET'])
 def libro_list(request):
     if(request.user.has_perm("biblioteca.view_libro")):
-<<<<<<< HEAD
-        libros = Libro.objects.all()
-        serializer = LibroSerializer(libros, many=True)
-        #serializer = LibroSerializerMejorado(libros, many=True)
-=======
         libros = Libro.objects.select_related("biblioteca").prefetch_related("autores").all()
         #serializer = LibroSerializer(libros, many=True)
         serializer = LibroSerializerMejorado(libros, many=True)
->>>>>>> 7f713f535b4b8d7a765ec9f9798d16deaa870768
         return Response(serializer.data)
     else:
         return Response({"Sin permisos"}, status=status.HTTP_401_UNAUTHORIZED)
