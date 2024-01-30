@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/Tema_9_CLIENTE_API/manage.py",
             "args": [
-                "runserver"
+                "runserver",
+                "127.0.0.1:8080"
             ],
             "django": true,
             "justMyCode": true

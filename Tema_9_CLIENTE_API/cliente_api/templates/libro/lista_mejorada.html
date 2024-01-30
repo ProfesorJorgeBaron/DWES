@@ -1,25 +1,32 @@
 {% extends "estructura/principal.html" %}
+
+{% block cabecera_extra %}
+    {% load static %}
+    <script type="text/javascript" src="{% static 'javascript/principal.js' %}" ></script>
+{% endblock %}
+
 {% block contenido %}
     <h1 class="display-3">Lista de Libros</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block busqueda %}
+    {% endblock %}
 
     <div class="row">
         {% for libro in libros_mostrar %}
             <div class="col-sm-4 mb-2">
-               
-                <p>nombre: {{libro.nombre}}</p>
-                <p>idioma: {{libro.idioma}}</p>
-                <p>descripcion: {{libro.descripcion}}</p>
-                <p>fecha_publicacion: {{libro.fecha_publicacion}}</p>
-                <p>biblioteca: {{libro.biblioteca.nombre }}</p>
-                <p>Autores:</p>
-                <ul>
-                {% for autor in libro.autores %}
-                    <li>{{ autor.nombre }}  {{ autor.apellidos }}</li>
-                {% endfor %}
-                </ul>
+                {% include 'libro/libro.html' %}
             </div>
         {% empty %}
             <h1>Lo sentimos pero no hay libros</h1>
         {% endfor %}
     </div>
-{% endblock %}  
+{% endblock %}

@@ -8,13 +8,10 @@ from django.db.models import Q,Prefetch
 
 @api_view(['GET'])
 def libro_list(request):
-    if(request.user.has_perm("biblioteca.view_libro")):
-        libros = Libro.objects.select_related("biblioteca").prefetch_related("autores").all()
-        #serializer = LibroSerializer(libros, many=True)
-        serializer = LibroSerializerMejorado(libros, many=True)
-        return Response(serializer.data)
-    else:
-        return Response({"Sin permisos"}, status=status.HTTP_401_UNAUTHORIZED)
+    libros = Libro.objects.select_related("biblioteca").prefetch_related("autores").all()
+    #serializer = LibroSerializer(libros, many=True)
+    serializer = LibroSerializerMejorado(libros, many=True)
+    return Response(serializer.data)
     
 @api_view(['GET'])
 def cliente_list(request):
@@ -24,18 +21,16 @@ def cliente_list(request):
 
 @api_view(['GET'])
 def libro_buscar(request):
-    if(request.user.has_perm("biblioteca.view_libro")):
-        formulario = BusquedaLibroForm(request.query_params)
-        if(formulario.is_valid()):
-            texto = formulario.data.get('textoBusqueda')
-            libros = Libro.objects.select_related("biblioteca").prefetch_related("autores")
-            libros = libros.filter(Q(nombre__contains=texto) | Q(descripcion__contains=texto)).all()
-            serializer = LibroSerializerMejorado(libros, many=True)
-            return Response(serializer.data)
-        else:
-            return Response(formulario.errors, status=status.HTTP_400_BAD_REQUEST)
+    formulario = BusquedaLibroForm(request.query_params)
+    if(formulario.is_valid()):
+        texto = formulario.data.get('textoBusqueda')
+        libros = Libro.objects.select_related("biblioteca").prefetch_related("autores")
+        libros = libros.filter(Q(nombre__contains=texto) | Q(descripcion__contains=texto)).all()
+        serializer = LibroSerializerMejorado(libros, many=True)
+        return Response(serializer.data)
     else:
-        return Response({"Sin permisos"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(formulario.errors, status=status.HTTP_400_BAD_REQUEST)
+   
 
 @api_view(['GET'])
 def libro_buscar_avanzado(request):
@@ -92,6 +87,7 @@ def autor_list(request):
     autores = Autor.objects.all()
     serializer = AutorSerializer(autores, many=True)
     return Response(serializer.data)
+
 '''
 @api_view(['POST'])
 def libro_create(request):
@@ -108,8 +104,8 @@ def libro_create(request):
 '''
 
 @api_view(['POST'])
-def libro_create(request):
-    serializers = LibroSerializerCreate(data=request.query_params)
+def libro_create(request):  
+    serializers = LibroSerializerCreate(data=request.data)
     if serializers.is_valid():
         try:
             serializers.save()
@@ -118,4 +114,46 @@ def libro_create(request):
             return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET']) 
+def libro_obtener(request,libro_id):
+    libro = Libro.objects.select_related("biblioteca").prefetch_related("autores")
+    libro = libro.get(id=libro_id)
+    serializer = LibroSerializerMejorado(libro)
+    return Response(serializer.data)
+
+@api_view(['PUT'])
+def libro_editar(request,libro_id):
+    libro = Libro.objects.get(id=libro_id)
+    serializers = LibroSerializerCreate(data=request.data,instance=libro)
+    if serializers.is_valid():
+        try:
+            serializers.save()
+            return Response("Libro EDITADO")
+        except Exception as error:
+            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['PATCH'])
+def libro_actualizar_nombre(request,libro_id):
+    libro = Libro.objects.get(id=libro_id)
+    serializers = LibroSerializerActualizarNombre(data=request.data,instance=libro)
+    if serializers.is_valid():
+        try:
+            serializers.save()
+            return Response("Libro EDITADO")
+        except Exception as error:
+            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def libro_eliminar(request,libro_id):
+    libro = Libro.objects.get(id=libro_id)
+    try:
+        libro.delete()
+        return Response("Libro ELIMINADO")
+    except Exception as error:
+        return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     

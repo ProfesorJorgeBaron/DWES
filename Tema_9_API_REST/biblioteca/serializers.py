@@ -45,7 +45,8 @@ class LibroSerializerMejorado(serializers.ModelSerializer):
     idioma = serializers.CharField(source='get_idioma_display')
     
     class Meta:
-        fields = ('nombre',
+        fields = ('id',
+                  'nombre',
                   'idioma',
                   'descripcion',
                   'fecha_publicacion',
@@ -76,19 +77,21 @@ class DatosClienteSerializer(serializers.ModelSerializer):
 
 
 class LibroSerializerCreate(serializers.ModelSerializer):
-    
-    biblioteca = BibliotecaSerializer()
-    
-    fecha_publicacion = serializers.DateField(format="%d-%m-%Y")
-    
+ 
     class Meta:
         model = Libro
-        fields = ['nombre','descripcion','fecha_publicacion','idioma','biblioteca','autores','fecha_actualizacion']
+        fields = ['nombre','descripcion','fecha_publicacion',
+                  'idioma','biblioteca','autores',
+                  'fecha_actualizacion']
     
     def validate_nombre(self,nombre):
         libroNombre = Libro.objects.filter(nombre=nombre).first()
-        if not libroNombre is None:
-            raise serializers.ValidationError('Ya existe un libro con ese nombre')
+        if(not libroNombre is None
+           ):
+             if(not self.instance is None and libroNombre.id == self.instance.id):
+                 pass
+             else:
+                raise serializers.ValidationError('Ya existe un libro con ese nombre')
         return nombre
     
     def validate_descripcion(self,descripcion):
@@ -98,16 +101,33 @@ class LibroSerializerCreate(serializers.ModelSerializer):
     
     def validate_fecha_publicacion(self,fecha_publicacion):
         fechaHoy = date.today()
-        if fechaHoy < fecha_publicacion:
+        if fechaHoy >= fecha_publicacion:
             raise serializers.ValidationError('La fecha de publicacion debe ser mayor a Hoy')
         return fecha_publicacion
     
-    def validate(self,data):
-        raise serializers.ValidationError('No puede usar la Biblioteca de la Universidad de Sevilla y el idioma Fránces')
-        return data
+    def validate_biblioteca(self,biblioteca): 
+        if self.initial_data['idioma'] == "FR" and biblioteca == 1:
+            raise serializers.ValidationError('No puede usar la Biblioteca de la Universidad de Sevilla y el idioma Fránces')
+        return biblioteca
+    
+    def validate_idioma(self,idioma): 
+        if idioma == "FR" and int(self.initial_data['biblioteca']) == 1:
+            raise serializers.ValidationError('No puede usar la Biblioteca de la Universidad de Sevilla y el idioma Fránces')
+        return idioma
     
     def validate_autores(self,autores):
-        
-        if len(autores) < 2:
+        if len(autores) < 1:
             raise serializers.ValidationError('Debe seleccionar al menos un autor')
         return autores
+
+class LibroSerializerActualizarNombre(serializers.ModelSerializer):
+ 
+    class Meta:
+        model = Libro
+        fields = ['nombre']
+    
+    def validate_nombre(self,nombre):
+        libroNombre = Libro.objects.filter(nombre=nombre).first()
+        if(not libroNombre is None and libroNombre.id != self.instance.id):
+            raise serializers.ValidationError('Ya existe un libro con ese nombre')
+        return nombre

@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from .models import *
 from datetime import date
 import datetime
-from .helpers import *
+from .helper import helper
 
 class BusquedaLibroForm(forms.Form):
     textoBusqueda = forms.CharField(required=True)
@@ -26,12 +26,12 @@ class BusquedaAvanzadaLibroForm(forms.Form):
     
     fecha_desde = forms.DateField(label="Fecha Desde",
                                 required=False,
-                                widget= forms.SelectDateWidget(years=range(1990,2023))
+                                widget= forms.SelectDateWidget(years=range(1990,2025))
                                 )
     
     fecha_hasta = forms.DateField(label="Fecha Desde",
                                   required=False,
-                                  widget= forms.SelectDateWidget(years=range(1990,2023))
+                                  widget= forms.SelectDateWidget(years=range(1990,2025))
                                   )
     
 class LibroForm(forms.Form):
@@ -46,7 +46,7 @@ class LibroForm(forms.Form):
     
     fecha_publicacion = forms.DateField(label="Fecha Publicación",
                                         initial=datetime.date.today,
-                                        widget= forms.SelectDateWidget()
+                                        widget= forms.SelectDateWidget(years=range(1990,2025))
                                         )
     
     IDIOMAS = [
@@ -58,17 +58,26 @@ class LibroForm(forms.Form):
     idioma = forms.ChoiceField(choices=IDIOMAS,
                                initial="ES")
     
-    bibliotecasDisponibles = obtener_bibliotecas_select()
-    biblioteca = forms.ChoiceField(
+    def __init__(self, *args, **kwargs):
+        
+        super(LibroForm, self).__init__(*args, **kwargs)
+        
+        bibliotecasDisponibles = helper.obtener_bibliotecas_select()
+        self.fields["biblioteca"] = forms.ChoiceField(
             choices=bibliotecasDisponibles,
             widget=forms.Select,
             required=True,
-    )
-    
-    autoresDisponibles = obtener_autores_select()
-    autores = forms.MultipleChoiceField(
-        choices= autoresDisponibles,
-        required=True,
-        help_text="Mantén pulsada la tecla control para seleccionar varios elementos"
-    )
-    
+        )
+        
+        autoresDisponibles = helper.obtener_autores_select()
+        self.fields["autores"] = forms.MultipleChoiceField(
+            choices= autoresDisponibles,
+            required=True,
+            help_text="Mantén pulsada la tecla control para seleccionar varios elementos"
+        )
+        
+class LibroActualizarNombreForm(forms.Form):
+    nombre = forms.CharField(label="Nombre del Libro",
+                             required=True, 
+                             max_length=200,
+                             help_text="200 caracteres como máximo")
