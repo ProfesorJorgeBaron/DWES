@@ -11,8 +11,9 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'),True)
 env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 # Create your views here.
 #Vistas API
 
@@ -154,8 +155,8 @@ def libro_editar(request,libro_id):
     formulario = LibroForm(datosFormulario,
             initial={
                 'nombre': libro['nombre'],
-                'descripcion': libro.get('descripcion', ''),
-                'fecha_publicacion': datetime.datetime.strptime(libro['fecha_publicacion'], '%d-%m-%Y').date(),
+                'descripcion': libro["descripcion"],
+                'fecha_publicacion': datetime.strptime(libro['fecha_publicacion'], '%d-%m-%Y').date(),
                 'idioma': libro['idioma'],
                 'biblioteca': libro['biblioteca']['id'],
                 'autores': [autor['id'] for autor in libro['autores']],
