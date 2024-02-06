@@ -13,5 +13,7 @@ urlpatterns = [
     path('libros/eliminar/<int:libro_id>',libro_eliminar),
     path('clientes',cliente_list),
     path('bibliotecas',biblioteca_list),
-    path('autores',autor_list)
+    path('autores',autor_list),
+    path('registrar/usuario',registrar_usuario.as_view()),
+    path('usuario/token/<str:token>',obtener_usuario_token)
 ]

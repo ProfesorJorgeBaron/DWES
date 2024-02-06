@@ -12,4 +12,7 @@ urlpatterns = [
     path('libros/busqueda_simple',views.libro_busqueda_simple,name='libro_buscar_simple'),
     path('libros/busqueda_avanzada',views.libro_busqueda_avanzada,name='libro_buscar_avanzado'),
     path('libros/crear',views.libro_crear,name='libro_crear'),
+    path('registrar',views.registrar_usuario,name='registrar_usuario'),
+    path('login',views.login,name='login'),
+    path('logout',views.logout,name='logout'),
 ]
