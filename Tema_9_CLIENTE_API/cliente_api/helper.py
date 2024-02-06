@@ -31,6 +31,16 @@ class helper:
             lista_autores.append((autor["id"],autor["nombre"]))
         return lista_autores
     
+    def obtener_categorias_select():
+        # obtenemos todos los libros
+        headers = {'Authorization': 'Bearer '+env("TOKEN_ACCESO")} 
+        response = requests.get('http://127.0.0.1:8000/api/v1/categorias',headers=headers)
+        categorias = response.json()
+        lista_categorias = []
+        for categoria in categorias:
+            lista_categorias.append((categoria["id"],categoria["categoria"]))
+        return lista_categorias
+    
     def obtener_libro(id):
          # obtenemos todos los libros
         headers = {'Authorization': 'Bearer '+env("TOKEN_ACCESO")} 

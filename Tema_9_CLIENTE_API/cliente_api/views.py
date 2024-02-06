@@ -105,6 +105,7 @@ def libro_crear(request):
                     } 
             datos = formulario.data.copy()
             datos["autores"] = request.POST.getlist("autores");
+            datos["categorias"] = request.POST.getlist("categorias")
             datos["fecha_publicacion"] = str(
                                             datetime.date(year=int(datos['fecha_publicacion_year']),
                                                         month=int(datos['fecha_publicacion_month']),
@@ -157,10 +158,11 @@ def libro_editar(request,libro_id):
             initial={
                 'nombre': libro['nombre'],
                 'descripcion': libro["descripcion"],
-                'fecha_publicacion': datetime.strptime(libro['fecha_publicacion'], '%d-%m-%Y').date(),
+                'fecha_publicacion': datetime.datetime.strptime(libro['fecha_publicacion'], '%d-%m-%Y').date(),
                 'idioma': libro['idioma'],
                 'biblioteca': libro['biblioteca']['id'],
                 'autores': [autor['id'] for autor in libro['autores']],
+                'categorias': [categoria['categoria']["id"] for categoria in libro['categorias']]
             }
     )
     if (request.method == "POST"):
@@ -169,6 +171,7 @@ def libro_editar(request,libro_id):
             headers = crear_cabecera()
             datos = request.POST.copy()
             datos["autores"] = request.POST.getlist("autores")
+            datos["categorias"] = request.POST.getlist("categorias")
             datos["fecha_publicacion"] = str(datetime.date(year=int(datos['fecha_publicacion_year']),
                                                         month=int(datos['fecha_publicacion_month']),
                                                         day=int(datos['fecha_publicacion_day'])))
@@ -336,6 +339,8 @@ def login(request):
         formulario = LoginForm()
     return render(request, 'registration/login.html', {'form': formulario})
 
+
+    
 def logout(request):
     del request.session['token']
     return redirect('index')

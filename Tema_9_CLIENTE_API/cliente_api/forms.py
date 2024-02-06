@@ -77,6 +77,13 @@ class LibroForm(forms.Form):
             help_text="Mantén pulsada la tecla control para seleccionar varios elementos"
         )
         
+        categoriasDisponibles = helper.obtener_categorias_select()
+        self.fields["categorias"] = forms.MultipleChoiceField(
+            choices= categoriasDisponibles,
+            required=True,
+            help_text="Mantén pulsada la tecla control para seleccionar varios elementos"
+        )
+        
 class LibroActualizarNombreForm(forms.Form):
     nombre = forms.CharField(label="Nombre del Libro",
                              required=True, 

@@ -91,6 +91,12 @@ def autor_list(request):
     serializer = AutorSerializer(autores, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def categoria_list(request):
+    categorias = Categoria.objects.all()
+    serializer = CategoriaSerializer(categorias, many=True)
+    return Response(serializer.data)
+
 '''
 @api_view(['POST'])
 def libro_create(request):
@@ -107,16 +113,19 @@ def libro_create(request):
 '''
 
 @api_view(['POST'])
-def libro_create(request):  
-    serializers = LibroSerializerCreate(data=request.data)
-    if serializers.is_valid():
+def libro_create(request): 
+    print(request.data)
+    libroCreateSerializer = LibroSerializerCreate(data=request.data)
+    if libroCreateSerializer.is_valid():
         try:
-            serializers.save()
+            libroCreateSerializer.save()
             return Response("Libro CREADO")
+        except serializers.ValidationError as error:
+            return Response(error.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
             return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(libroCreateSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET']) 
 def libro_obtener(request,libro_id):
@@ -128,15 +137,17 @@ def libro_obtener(request,libro_id):
 @api_view(['PUT'])
 def libro_editar(request,libro_id):
     libro = Libro.objects.get(id=libro_id)
-    serializers = LibroSerializerCreate(data=request.data,instance=libro)
-    if serializers.is_valid():
+    libroCreateSerializer = LibroSerializerCreate(data=request.data,instance=libro)
+    if libroCreateSerializer.is_valid():
         try:
-            serializers.save()
+            libroCreateSerializer.save()
             return Response("Libro EDITADO")
+        except serializers.ValidationError as error:
+            return Response(error.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
             return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(libroCreateSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(['PATCH'])
 def libro_actualizar_nombre(request,libro_id):

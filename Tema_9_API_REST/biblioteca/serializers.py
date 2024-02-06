@@ -23,13 +23,27 @@ class AutorSerializer(serializers.ModelSerializer):
         model = Autor
         fields = '__all__'
     
-    
 class LibroSerializer(serializers.ModelSerializer):
     
     class Meta:
         fields = '__all__'
         model = Libro
+
+
+class CategoriaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categoria
+        fields = '__all__'
         
+
+class LibrosCategoriasSerializer(serializers.ModelSerializer):
+    
+    categoria = CategoriaSerializer()
+    
+    class Meta:
+        model = LibrosCategorias
+        fields = '__all__'
+
 class LibroSerializerMejorado(serializers.ModelSerializer):
    
     #Para relaciones ManyToOne o OneToOne
@@ -37,6 +51,9 @@ class LibroSerializerMejorado(serializers.ModelSerializer):
     
     #Para las relaciones ManyToMany
     autores = AutorSerializer(read_only=True, many=True)
+    
+    #Para las relaciones ManyToMany con through
+    categorias = LibrosCategoriasSerializer(read_only=True, many=True,source='libroscategorias_set')
     
     #Para formatear Fechas
     fecha_publicacion = serializers.DateField(format=('%d-%m-%Y'))
@@ -51,9 +68,10 @@ class LibroSerializerMejorado(serializers.ModelSerializer):
                   'descripcion',
                   'fecha_publicacion',
                   'biblioteca',
-                  'autores')
+                  'autores',
+                  'categorias'
+                  )
         model = Libro
-
 
 class PrestamoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -74,15 +92,17 @@ class DatosClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = DatosCliente
         fields = '__all__'
+        
 
 
 class LibroSerializerCreate(serializers.ModelSerializer):
- 
+    
     class Meta:
         model = Libro
         fields = ['nombre','descripcion','fecha_publicacion',
                   'idioma','biblioteca','autores',
-                  'fecha_actualizacion']
+                  'fecha_actualizacion',
+                  'categorias']
     
     def validate_nombre(self,nombre):
         libroNombre = Libro.objects.filter(nombre=nombre).first()
@@ -121,6 +141,51 @@ class LibroSerializerCreate(serializers.ModelSerializer):
         if len(autores) < 1:
             raise serializers.ValidationError('Debe seleccionar al menos un autor')
         return autores
+    
+    def create(self, validated_data):
+        categorias = self.initial_data['categorias']
+        if len(categorias) < 2:
+            raise serializers.ValidationError(
+                    {'categorias':
+                    ['Debe seleccionar al menos dos categorias']
+                    })
+        
+        libro = Libro.objects.create(
+            nombre = validated_data["nombre"],
+            descripcion = validated_data["descripcion"],
+            fecha_publicacion = validated_data["fecha_publicacion"],
+            idioma = validated_data["idioma"],
+            biblioteca = validated_data["biblioteca"]
+        )
+        libro.autores.set(validated_data["autores"])
+       
+        for categoria in categorias:
+            modeloCategoria = Categoria.objects.get(id=categoria)
+            LibrosCategorias.objects.create(categoria=modeloCategoria,libro=libro)
+        return libro
+    
+    def update(self, instance, validated_data):
+        categorias = self.initial_data['categorias']
+        if len(categorias) < 2:
+            raise serializers.ValidationError(
+                    {'categorias':
+                    ['Debe seleccionar al menos dos categorias']
+                    })
+        
+        instance.nombre = validated_data["nombre"]
+        instance.descripcion = validated_data["descripcion"]
+        instance.fecha_publicacion = validated_data["fecha_publicacion"]
+        instance.idioma = validated_data["idioma"]
+        instance.biblioteca = validated_data["biblioteca"]
+        instance.save()
+        
+        instance.autores.set(validated_data["autores"])
+
+        instance.categorias.clear()
+        for categoria in categorias:
+            modeloCategoria = Categoria.objects.get(id=categoria)
+            LibrosCategorias.objects.create(categoria=modeloCategoria,libro=instance)
+        return instance
 
 class LibroSerializerActualizarNombre(serializers.ModelSerializer):
  

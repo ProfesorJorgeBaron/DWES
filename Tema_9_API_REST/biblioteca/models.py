@@ -40,7 +40,10 @@ class Autor(models.Model):
     
     def __str__(self):
         return self.nombre + " "+ self.apellidos
-    
+
+
+class Categoria(models.Model):
+    categoria = models.CharField(max_length=200)
 
     
 class Libro(models.Model):
@@ -62,7 +65,8 @@ class Libro(models.Model):
     fecha_publicacion = models.DateField()
     fecha_actualizacion = models.DateTimeField(default=timezone.now,blank=True)
     biblioteca = models.ForeignKey(Biblioteca, on_delete = models.CASCADE,related_name="libros_biblioteca")
-    autores =   models.ManyToManyField(Autor,related_name="libros_autores")
+    autores =  models.ManyToManyField(Autor,related_name="libros_autores")
+    categorias = models.ManyToManyField(Categoria,through="LibrosCategorias")
 
     def __str__(self):
         return self.nombre
@@ -90,3 +94,8 @@ class Prestamo(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
     fecha_prestamo = models.DateTimeField(default=timezone.now,blank=True)
+
+class LibrosCategorias(models.Model):
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
+    
