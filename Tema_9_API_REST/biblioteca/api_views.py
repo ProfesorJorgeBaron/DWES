@@ -107,7 +107,7 @@ def libro_create(request):
             return Response("Libro CREADO")
         except Exception as error:
             print(error)
-            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(formulario.errors, status=status.HTTP_400_BAD_REQUEST)
 '''
@@ -123,7 +123,7 @@ def libro_create(request):
         except serializers.ValidationError as error:
             return Response(error.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
-            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(libroCreateSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -145,7 +145,7 @@ def libro_editar(request,libro_id):
         except serializers.ValidationError as error:
             return Response(error.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
-            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(libroCreateSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -159,7 +159,7 @@ def libro_actualizar_nombre(request,libro_id):
             serializers.save()
             return Response("Libro EDITADO")
         except Exception as error:
-            return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -170,7 +170,7 @@ def libro_eliminar(request,libro_id):
         libro.delete()
         return Response("Libro ELIMINADO")
     except Exception as error:
-        return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # views.py
@@ -205,7 +205,7 @@ class registrar_usuario(generics.CreateAPIView):
                 usuarioSerializado = UsuarioSerializer(user)
                 return Response(usuarioSerializado.data)
             except Exception as error:
-                return Response(error, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
