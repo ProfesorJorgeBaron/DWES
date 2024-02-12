@@ -12,7 +12,9 @@ class BusquedaLibroForm(forms.Form):
 class BusquedaAvanzadaLibroForm(forms.Form):
     
     textoBusqueda = forms.CharField(required=False)
-    
+
+    textoCategoria = forms.CharField(required=False)    
+        
     IDIOMAS = [
         ("ES", "Español"),
         ("EN", "Inglés"),

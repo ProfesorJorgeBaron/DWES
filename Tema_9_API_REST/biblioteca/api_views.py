@@ -8,6 +8,7 @@ from django.db.models import Q,Prefetch
 from django.contrib.auth.models import Group
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
+from .cliente_ml import cliente_ml
 
 @api_view(['GET'])
 def libro_list(request):
@@ -42,10 +43,11 @@ def libro_buscar_avanzado(request):
         formulario = BusquedaAvanzadaLibroForm(request.query_params)
         if formulario.is_valid():
             texto = formulario.cleaned_data.get('textoBusqueda')
-            QSlibros = Libro.objects.select_related("biblioteca").prefetch_related("autores")
-            
+            QSlibros = Libro.objects.select_related("biblioteca").prefetch_related("autores","categorias")
+           
             #obtenemos los filtros
             textoBusqueda = formulario.cleaned_data.get('textoBusqueda')
+            textoCategoria = formulario.cleaned_data.get('textoCategoria')
             idiomas = formulario.cleaned_data.get('idiomas')
             fechaDesde = formulario.cleaned_data.get('fecha_desde')
             fechaHasta = formulario.cleaned_data.get('fecha_hasta')
@@ -53,6 +55,8 @@ def libro_buscar_avanzado(request):
             #Por cada filtro comprobamos si tiene un valor y lo añadimos a la QuerySet
             if(textoBusqueda != ""):
                 QSlibros = QSlibros.filter(Q(nombre__contains=texto) | Q(descripcion__contains=texto))
+                
+                
                 
             #Si hay idiomas, iteramos por ellos, creamos la queryOR y le aplicamos el filtro
             if(len(idiomas) > 0):
@@ -70,6 +74,13 @@ def libro_buscar_avanzado(request):
              #Obtenemos los libros con fecha publicacion menor a la fecha desde
             if(not fechaHasta is None):
                 QSlibros = QSlibros.filter(fecha_publicacion__lte=fechaHasta)
+            
+            
+            if(textoCategoria != ""):
+                resultado = cliente_ml.clasificar(textoCategoria)
+                if(resultado['confidence']) > 60:
+                    QSlibros = QSlibros.filter(categorias__categoria=resultado["class_name"])
+            
             
             libros = QSlibros.all()
             serializer = LibroSerializerMejorado(libros, many=True)

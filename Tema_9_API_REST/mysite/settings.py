@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'rest_framework',
-    'oauth2_provider'
+    'oauth2_provider',
+    'corsheaders'
 ]
 
 OAUTH2_PROVIDER = {
@@ -80,6 +81,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:4200"
 ]
 
 ROOT_URLCONF = 'mysite.urls'
