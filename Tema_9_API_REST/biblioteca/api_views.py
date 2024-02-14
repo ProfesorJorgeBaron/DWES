@@ -134,6 +134,7 @@ def libro_create(request):
         except serializers.ValidationError as error:
             return Response(error.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
+            print(repr(error))
             return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(libroCreateSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -162,7 +163,6 @@ def libro_editar(request,libro_id):
     
 @api_view(['PATCH'])
 def libro_actualizar_nombre(request,libro_id):
-    serializers = LibroSerializerCreate(data=request.data)
     libro = Libro.objects.get(id=libro_id)
     serializers = LibroSerializerActualizarNombre(data=request.data,instance=libro)
     if serializers.is_valid():
@@ -170,6 +170,7 @@ def libro_actualizar_nombre(request,libro_id):
             serializers.save()
             return Response("Libro EDITADO")
         except Exception as error:
+            print(repr(error))
             return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -216,6 +217,7 @@ class registrar_usuario(generics.CreateAPIView):
                 usuarioSerializado = UsuarioSerializer(user)
                 return Response(usuarioSerializado.data)
             except Exception as error:
+                print(repr(error))
                 return Response(repr(error), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
