@@ -218,7 +218,7 @@ def libro_editar_nombre(request,libro_id):
     )
     if (request.method == "POST"):
         try:
-            formulario = LibroForm(request.POST)
+            formulario = LibroActualizarNombreForm(request.POST)
             headers = crear_cabecera()
             datos = request.POST.copy()
             response = requests.patch(
