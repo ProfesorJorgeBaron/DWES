@@ -166,40 +166,22 @@ def libro_editar(request,libro_id):
             }
     )
     if (request.method == "POST"):
-        try:
-            formulario = LibroForm(request.POST)
-            headers = crear_cabecera()
-            datos = request.POST.copy()
-            datos["autores"] = request.POST.getlist("autores")
-            datos["categorias"] = request.POST.getlist("categorias")
-            datos["fecha_publicacion"] = str(datetime.date(year=int(datos['fecha_publicacion_year']),
-                                                        month=int(datos['fecha_publicacion_month']),
-                                                        day=int(datos['fecha_publicacion_day'])))
-           
-            response = requests.put(
-                'http://127.0.0.1:8000/api/v1/libros/editar/'+str(libro_id),
-                headers=headers,
-                data=json.dumps(datos)
-            )
-            if(response.status_code == requests.codes.ok):
-                return redirect("libro_mostrar",libro_id=libro_id)
-            else:
-                print(response.status_code)
-                response.raise_for_status()
-        except HTTPError as http_err:
-            print(f'Hubo un error en la petición: {http_err}')
-            if(response.status_code == 400):
-                errores = response.json()
-                for error in errores:
-                    formulario.add_error(error,errores[error])
-                return render(request, 
-                            'libro/actualizar.html',
-                            {"formulario":formulario,"libro":libro})
-            else:
-                return mi_error_500(request)
-        except Exception as err:
-            print(f'Ocurrió un error: {err}')
-            return mi_error_500(request)
+        formulario = LibroForm(request.POST)
+        headers = crear_cabecera()
+        datos = request.POST.copy()
+        datos["autores"] = request.POST.getlist("autores")
+        datos["categorias"] = request.POST.getlist("categorias")
+        datos["fecha_publicacion"] = str(datetime.date(year=int(datos['fecha_publicacion_year']),
+                                                    month=int(datos['fecha_publicacion_month']),
+                                                    day=int(datos['fecha_publicacion_day'])))
+        
+        
+        
+        codigo_respuesta = helper.realizar_peticion_api('editar/'+str(libro_id),"PUT",datos,formulario)
+        if(codigo_respuesta == 200):
+            return redirect("libro_mostrar",libro_id=libro_id)
+        else:
+            return helper.mis_errores(codigo_respuesta,formulario,'libro/actualizar.html',{"formulario":formulario,"libro":libro})
     return render(request, 'libro/actualizar.html',{"formulario":formulario,"libro":libro})
 
 
