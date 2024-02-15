@@ -146,6 +146,8 @@ def libro_obtener(request,libro_id):
     libro = helper.obtener_libro(libro_id)
     return render(request, 'libro/libro_mostrar.html',{"libro":libro})
 
+
+from .cliente_api import cliente_api
 def libro_editar(request,libro_id):
    
     datosFormulario = None
@@ -167,7 +169,6 @@ def libro_editar(request,libro_id):
     )
     if (request.method == "POST"):
         formulario = LibroForm(request.POST)
-        headers = crear_cabecera()
         datos = request.POST.copy()
         datos["autores"] = request.POST.getlist("autores")
         datos["categorias"] = request.POST.getlist("categorias")
@@ -176,12 +177,15 @@ def libro_editar(request,libro_id):
                                                     day=int(datos['fecha_publicacion_day'])))
         
         
-        
-        codigo_respuesta = helper.realizar_peticion_api('editar/'+str(libro_id),"PUT",datos,formulario)
-        if(codigo_respuesta == 200):
+        cliente = cliente_api(request.session["token"],"PUT",'libros/editar/'+str(libro_id),datos)
+        cliente.realizar_peticion_api()
+        if(cliente.es_respuesta_correcta()):
             return redirect("libro_mostrar",libro_id=libro_id)
         else:
-            return helper.mis_errores(codigo_respuesta,formulario,'libro/actualizar.html',{"formulario":formulario,"libro":libro})
+            if(cliente.es_error_validacion_datos()):
+                cliente.incluir_errores_formulario(formulario)
+            else:
+                return tratar_errores(request,cliente.codigoRespuesta)
     return render(request, 'libro/actualizar.html',{"formulario":formulario,"libro":libro})
 
 
@@ -326,6 +330,14 @@ def login(request):
 def logout(request):
     del request.session['token']
     return redirect('index')
+
+
+def tratar_errores(request,codigo):
+    if codigo == 404:
+        return mi_error_404(request)
+    else:
+        return mi_error_500(request)
+        
 
 
 #Páginas de Error

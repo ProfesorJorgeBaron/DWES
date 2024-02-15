@@ -1,51 +1,80 @@
-class cliente_api:
-    codigo = 0
-    datos = None
-    
-    def realizar_peticion_api(url,metodo,datos=None):
-    
-        codigo = 0
-        try:
-            if metodo == "PUT" or metodo == "PATCH" or metodo == "POST":
-                headers = crear_cabecera_contenido()
-            else:
-                headers = crear_cabecera_token()
-            
-            if(datos is not None):
-                datos=json.dumps(datos)
-            
-            response = requests.put(
-                env("URL")+url,
-                headers=headers,
-                data=datos
-            )
-            codigo = response.status_code
-            response.raise_for_status()
-        except HTTPError as http_err:
-            print(f'Hubo un error en la petición: {http_err}')
-        except Exception as err:
-            print(f'Ocurrió un error: {err}')
-        return codigo
-        
-        
-    def mis_errores(code,formulario,url_respuesta,datosrespuesta):
-        if code == 400:
-            # Error de que la solicitud no pudo ser interpretada o estaba mal formada.
-            errores = response.json()
-            for error in errores:
-                formulario.add_error(error,errores[error])
-                return render(request, url_respuesta,datosrespuesta)
-        elif code == 401:
-            # Error de credenciales de auntenticación inválidas.
-            return mi_error_401(request) 
-        elif response.status_code == 403:
-            # Error de permisos de usuario.
-            return mi_error_403(request)
-        elif response.status_code == 404:
-            # Error de recurso no encontrado.
-            return mi_error_404(request)
-        else:
-            # Otros tipos de errores
-            return mi_error_500(request)
 
-        
+import requests
+import environ
+import os
+from pathlib import Path
+import json
+from requests.exceptions import HTTPError
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'),True)
+env = environ.Env()
+
+
+class cliente_api:
+    
+    token = ""
+    metodo = ""
+    url = ""
+    datosEnvio = None
+    formatoRespuesta = ""
+    codigoRespuesta = 0
+    datosRespuesta = {}
+    headers = {}
+    respuesta = None
+    
+    
+    def __init__(self,token, metodo,url,datosEnvio=None,formatoRespuesta="json"):
+        self.token = token        
+        self.metodo = metodo   
+        self.url = url
+        self.datosEnvio = datosEnvio
+        self.formatoRespuesta = formatoRespuesta
+    
+    def crear_cabecera(self):
+        self.headers["Authorization"] = "Bearer "+self.token
+        if(self.metodo == "PUT" or self.metodo == "PATCH" or self.metodo == "POST"):
+            self.headers["Content-Type"] = "application/json"
+    
+    def transformar_datos_envio(self):
+        if(self.datosEnvio is not None):
+            self.datosEnvio=json.dumps(self.datosEnvio)
+    
+    def realizar_peticion(self):
+        try:
+            self.respuesta = requests.put(
+                    env("URL")+self.url,
+                    headers=self.headers,
+                    data=self.datosEnvio
+            )
+            self.codigoRespuesta = self.respuesta.status_code
+            self.respuesta.raise_for_status()
+        except HTTPError as http_err:
+            print(repr(http_err))
+            print(f'Hubo un error en la petición: {http_err}')
+    
+    def tratar_respuesta(self):
+        if(self.formatoRespuesta == "json"):
+            self.datosRespuesta = self.respuesta.json()
+         
+    def realizar_peticion_api(self):
+        try:
+            self.crear_cabecera()
+            self.transformar_datos_envio()    
+            self.realizar_peticion()
+            self.tratar_respuesta()
+        except Exception as err:
+            self.codigoRespuesta = 500
+            print(repr)
+            print(f'Ocurrió un error: {err}')
+    
+    def es_respuesta_correcta(self):
+        return self.codigoRespuesta == 200
+    
+    def es_error_validacion_datos(self):
+        return self.codigoRespuesta == 400
+    
+    def incluir_errores_formulario(self,formulario):
+        errores = self.datosRespuesta
+        for error in errores:
+                formulario.add_error(error,errores[error])
