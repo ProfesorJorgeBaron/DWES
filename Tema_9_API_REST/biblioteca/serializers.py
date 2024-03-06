@@ -94,6 +94,9 @@ class DatosClienteSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 
+import base64
+from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 class LibroSerializerCreate(serializers.ModelSerializer):
     
@@ -144,6 +147,18 @@ class LibroSerializerCreate(serializers.ModelSerializer):
     
     def create(self, validated_data):
         categorias = self.initial_data['categorias']
+        imagen =  base64.b64decode(self.initial_data['imagen'])
+        contenido_archivo = ContentFile(imagen)
+        
+        archivo = InMemoryUploadedFile(
+            contenido_archivo,       
+            None,               
+            validated_data["nombre"],     
+            'image/jpeg',     
+            contenido_archivo.size,   
+            None
+        )
+        
         if len(categorias) < 2:
             raise serializers.ValidationError(
                     {'categorias':
@@ -155,7 +170,8 @@ class LibroSerializerCreate(serializers.ModelSerializer):
             descripcion = validated_data["descripcion"],
             fecha_publicacion = validated_data["fecha_publicacion"],
             idioma = validated_data["idioma"],
-            biblioteca = validated_data["biblioteca"]
+            biblioteca = validated_data["biblioteca"],
+            imagen=archivo
         )
         libro.autores.set(validated_data["autores"])
        

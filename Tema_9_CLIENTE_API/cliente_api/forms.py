@@ -61,6 +61,8 @@ class LibroForm(forms.Form):
     idioma = forms.ChoiceField(choices=IDIOMAS,
                                initial="ES")
     
+    imagen = forms.FileField()
+    
     def __init__(self, *args, **kwargs):
         
         super(LibroForm, self).__init__(*args, **kwargs)

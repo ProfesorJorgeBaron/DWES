@@ -94,6 +94,8 @@ def libro_busqueda_avanzada(request):
         formulario = BusquedaAvanzadaLibroForm(None)
     return render(request, 'libro/busqueda_avanzada.html',{"formulario":formulario})
 
+import base64
+
 def libro_crear(request):
     
     if (request.method == "POST"):
@@ -111,6 +113,12 @@ def libro_crear(request):
                                                         month=int(datos['fecha_publicacion_month']),
                                                         day=int(datos['fecha_publicacion_day']))
                                              )
+             
+            imagen = request.FILES["imagen"].read()
+            datos["imagen"] = base64.b64encode(imagen).decode('utf-8')
+            #imagen = request.FILES['imagen'].file.getvalue()
+            #imagenes = {'imagen': imagen}
+
             
             response = requests.post(
                 'http://127.0.0.1:8000/api/v1/libros/crear',

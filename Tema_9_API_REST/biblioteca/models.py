@@ -70,6 +70,7 @@ class Libro(models.Model):
     biblioteca = models.ForeignKey(Biblioteca, on_delete = models.CASCADE,related_name="libros_biblioteca")
     autores =  models.ManyToManyField(Autor,related_name="libros_autores")
     categorias = models.ManyToManyField(Categoria,through="LibrosCategorias")
+    imagen = models.FileField(null=True)
 
     def __str__(self):
         return self.nombre
